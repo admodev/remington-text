@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remington Text Editor</title>
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+  <body>
+    <textarea id="content" placeholder="Escriba aquí..."></textarea>
+
+    <div class="buttons">
+      <button id="openfile" onclick="() => open()">Abrir archivo</button>
+      <button id="savefile" onclick="() => save(contentTextArea.value)">
+        Guardar
+      </button>
+    </div>
+
+    <script>
+      const openFile = document.getElementById("openfile");
+      const saveFile = document.getElementById("savefile");
+      const contentTextArea = document.getElementById("content");
+      let fileHandle;
+
+      const open = async () => {
+        [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const contents = await file.text();
+        contentTextArea.value = contents;
+      };
+
+      const save = async (content) => {
+        try {
+          const handle = await window.showSaveFilePicker({
+            types: [{ acept: { "text/plain": [".txt"] } }],
+          });
+          const writable = await handle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          return handle;
+        } catch (err) {
+          console.error(err.name);
+        }
+      };
+
+      openFile.addEventListener("click", () => open());
+      saveFile.addEventListener("click", () => save(contentTextArea.value));
+    </script>
+  </body>
+</html>
